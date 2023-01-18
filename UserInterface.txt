@@ -1,0 +1,130 @@
+Note that this algorithm was submitted by myself previously as a part of the PDI worksheet 7 submission requirements.
+
+START UserInterface
+    SUBMODULE: userInput
+    IMPORTS: prompt (string), lower (integer)(int), upper (integer)(int)
+    EXPORTS: out (integer)(int)
+    ASSERTION: An input will be taken and checked to see if it is the given range. Once a valid input is given, it will be returned to the caller.
+    ALGORITHM:
+        error := "Error, the input integer must be between " + lower + " and " + upper + " (inclusive)."
+        DO
+            TRY
+                OUTPUT prompt
+                INPUT out
+            CATCH: InputMismatchException (token retrieved does not match expected pattern or range)
+                INPUT (nothing)
+                out := lower - 1
+                displayError <- error
+        WHILE ((out < lower) OR (out > upper))
+    END userInput
+
+    SUBMODULE: userInput
+    IMPORTS: prompt (string), lower (real)(double), upper (real)(double)
+    EXPORTS: out (real)(double)
+    ASSERTION: An input will be taken and checked to see if it is the given range. Once a valid input is given, it will be returned to the caller.
+    ALGORITHM:
+        error := "Error, the input double must be between " + lower + " and " + upper + " (inclusive)."
+        DO
+            TRY
+                OUTPUT prompt
+                INPUT out
+            CATCH: InputMismatchException (token retrieved does not match expected pattern or range)
+                INPUT (nothing)
+                out := lower - 1.0
+                displayError <- error
+        WHILE ((out < lower) OR (out > upper))
+    END userInput
+
+    SUBMODULE: userInput
+    IMPORTS: prompt (string), lower (integer)(long), upper (integer)(long)
+    EXPORTS: out (integer)(long)
+    ASSERTION: An input will be taken and checked to see if it is the given range. Once a valid input is given, it will be returned to the caller.
+    ALGORITHM:
+        error := "Error, the input long must be between " + lower + " and " + upper + " (inclusive)."
+        DO
+            TRY
+                OUTPUT prompt
+                INPUT out
+            CATCH: InputMismatchException (token retrieved does not match expected pattern or range)
+                INPUT (nothing)
+                out := lower - 1
+                displayError <- error
+        WHILE ((out < lower) OR (out > upper))
+    END userInput
+
+    SUBMODULE: userInput
+    IMPORTS: prompt (string), lower (real)(float), upper (real)(float)
+    EXPORTS: out (real)(float)
+    ASSERTION: An input will be taken and checked to see if it is the given range. Once a valid input is given, it will be returned to the caller.
+    ALGORITHM:
+        error := "Error, the input float must be between " + lower + " and " + upper + " (inclusive)."
+        DO
+            TRY
+                OUTPUT prompt
+                INPUT out
+            CATCH: InputMismatchException (token retrieved does not match expected pattern or range)
+                INPUT (nothing)
+                out := lower - 1
+                displayError <- error
+        WHILE ((out < lower) OR (out > upper))
+    END userInput
+
+    SUBMODULE: userInput
+    IMPORTS: prompt (string), lower (character), upper (character)
+    EXPORTS: out (character)
+    ASSERTION: An input will be taken and checked to see if it is the given range. Once a valid input is given, it will be returned to the caller.
+    ALGORITHM:
+        error := "Error, the input char must be between " + lower + " and " + upper + " (inclusive)."
+        DO
+            TRY
+                OUTPUT prompt
+                INPUT out
+            CATCH: InputMismatchException (token retrieved does not match expected pattern or range)
+                INPUT (nothing)
+                out := (convert to character)((convert to integer)lower - 1)
+                displayError <- error
+        WHILE (((convert to integer)out < (convert to integer)lower) OR ((convert to integer)out > (convert to integer)upper))
+    END userInput
+
+    SUBMODULE: userInputChar
+    IMPORTS: prompt (string), charOptOne (character), charOptTwo (character), charOptThree (character), charOptFour (character)
+    EXPORTS: out (character)
+    ASSERTION: An input will be taken and checked to see if it is the given range. Once a valid input is given, it will be returned to the caller.
+    ALGORITHM:
+        error := "Error, the input char must be " + charOptOne + " or " + charOptTwo + " or " + charOptThree + " or " + charOptFour
+        DO
+            TRY
+                OUTPUT prompt
+                INPUT out
+            CATCH: InputMismatchException (token retrieved does not match expected pattern or range)
+                INPUT (nothing)
+                out := 'z'
+                displayError <- error
+        WHILE ((out IS NOT charOptOne)AND(out IS NOT charOptTwo)AND(out IS NOT charOptThree)AND(out IS NOT charFOUR))
+    END userInputChar
+
+    SUBMODULE: userInput
+    IMPORTS: prompt (String)
+    EXPORTS: out (String)
+    ASSERTION: An input will be taken and checked to see if it is a string. Once a valid input is given, it will be returned to the caller.
+    ALGORITHM:
+        error := "Error, the input must be a string."
+        DO
+            TRY
+                OUTPUT prompt
+                INPUT out
+            CATCH: IllegalArgumentException (token retrieved does not match expected type)
+                INPUT (nothing)
+                out := ""
+                displayError <- error
+        WHILE (out EQUALS "")
+    END userInput
+
+    SUBMODULE: displayError
+    IMPORTS: error (string)
+    EXPORTS: none
+    ASSERTION: The error message passed will be presented to the user.
+    ALGORITHM:
+        OUTPUT error
+    END displayError
+END UserInterface

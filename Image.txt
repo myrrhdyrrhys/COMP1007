@@ -1,0 +1,201 @@
+Note that this algorithm was previously submitted by myself as part of the PDI worksheet 6 submission requirements. This algorithm has been slightly edited since then, with the addition of the "smooth" algorithm.
+
+START Image
+    //Class Constants
+    (2-dimensional array of integer) kernelMatrix := {{1, 0, -1}, {1, 0, -1}, {1, 0, -1}}
+    (2-dimensional array of integer) defaultImage := {{10, 10, 10,  0,  0,  0}, {10, 10, 10,  0,  0,  0}, {10, 10, 10,  0,  0,  0}, {10, 10, 10,  0,  0,  0}, {10, 10, 10,  0,  0,  0}, {10, 10, 10,  0,  0,  0}}
+
+    //Private Classfields
+    (2-dimensional array of integer) originalImage
+    
+    SUBMODULE: Image (Default Constructor)
+    IMPORT: none
+    EXPORT: address of new Image object
+    ASSERTION: originalImage is the below two-dimensional matrix
+    ALGORITHM:
+        originalImage := defaultImage
+    END Image
+
+    SUBMODULE: Image (Alternate Constructor)
+    IMPORT: inOriginalImage (two-dimensional array of integer)
+    EXPORT: address of new Image object
+    ASSERTION: Creates the object if the imports are valid and fails otherwise
+    ALGORITHM:
+        IF (inOriginalImage != null) THEN
+            setOriginalImage <- inOriginalImage
+        END IF
+    END Image
+    
+    SUBMODULE: Image (Copy Constructor)
+    IMPORT: inOriginalImage (Image)
+    EXPORT: address of new Image object
+    ASSERTION: Creates copy of input Image object of identical "state"
+    ALGORITHM:
+        originalImage := inImage.getOriginalImage <- none
+    END Image
+
+    //MUTATORS (Setters)
+    SUBMODULE: setOriginalImage
+    IMPORT: inOriginalImage (two-dimensional array of integer)
+    EXPORT: none
+    ASSERTION: originalImage classfield will be set to inOriginalImage
+    ALGORITHM:
+        originalImage := inOriginalImage
+    END setOriginalImage
+
+    //ACCESSORS (Getters)
+    SUBMODULE: getOriginalImage
+    IMPORT: none
+    EXPORT: originalImage
+    ASSERTION: returns the current value of the private classfield originalImage
+    ALGORITHM:
+    END getOriginalImage
+
+    //equals
+    SUBMODULE: equals
+    IMPORT: obj (Object)
+    EXPORT: isEqual (boolean)
+    ASSERTION: Two Images are interchangeable if they have the same array elements
+    ALGORITM:
+        isEqual := false
+        isEqualTwo := true
+        p = SIZE OF originalImage 
+        q = SIZE OF originalImage[0] 
+        IF (obj IS AN Image)
+            inImage := (convert to Image)obj
+            (2-dimensional array of integer) newOriginalImage = inImage.getOriginalImage <- none
+            IF ((newOriginalImage = null) AND (originalImage = null)) THEN
+                isEqual := true
+            ELSE IF ((p = SIZE OF newOriginalImage) AND (q = SIZE OF newOriginalImage[0])) THEN
+                FOR m := 0 TO p (exclusive) INC BY 1
+                    FOR n := 0 TO q (exclusive) INC BY 1
+                        IF (originalImage[m][n] = newOriginalImage[m][n]) THEN
+                            isEqual := true
+                        ELSE
+                            IF (isEqualTwo = true) THEN
+                                isEqualTwo := false
+                            END IF
+                        END IF
+                    END FOR
+                END FOR
+            END IF
+        END IF
+        IF (isEqualTwo = false)
+            isEqual := false
+        END IF
+    END equals
+
+    //Clone (clones the current object)
+    SUBMODULE: clone
+    IMPORT: none
+    EXPORT: (Image) this
+    ASSERTION: creates a clone of the current object
+    ALGORITHM:
+    END clone
+
+    //toString
+    SUBMODULE: toString
+    IMPORT: none
+    EXPORT: (String) outString
+    ASSERTION: formats output of object of type Image
+    ALGORITHM:
+    public String toString()
+        outString := ""
+        p = SIZE OF originalImage
+        q = SIZE OF originalImage[0]
+        FOR t := 0 TO q (exclusive) INC BY 1
+            outString = outString + "-----"
+        END FOR
+        outString = outString + "--" + (NEWLINE)
+        FOR m := 0 TO p (exclusive) INC BY 1
+            FOR n := 0 TO q (exclusive) INC BY ONE
+                outString = outString + " |"
+                outString = outString + originalImage[m][n]
+            END FOR
+            outString = outString + " |" + (NEWLINE)
+            FOR t = 0 TO q (exclusive) INC BY 1
+                outString = outString + "-----"
+            END FOR
+            outString = outString + "--" + (NEWLINE)
+        END FOR
+    END toString
+
+    
+    SUBMODULE: convolution
+    IMPORT: kernelMatrix (two-dimensional array of integer)
+    EXPORT: resultArray
+    ASSERTION: A convolution calculation will be performed between the convolute matrix and the kernel matrix, with the result output formatted to the user.
+    ALGORITHM:
+        p := SIZE OF Convolute.MATRIX
+        q := SIZE OF Convolute.MATRIX[0]
+        k := SIZE OF Kernel.MATRIX
+        d := (p - k + 1) //no. rows of convResult[][]
+        f := (q - k + 1) //no. columns of convResult[][]
+        CREATE 2D ARRAY OF INTEGER resultArray[][] OF SIZE d ROWS AND f COLUMNS
+        sum := 0
+        total := 0
+        FOR m := 0 TO d (exclusive) INC BY 1
+            FOR n := 0 TO f (exclusive) INC BY 1
+                FOR i := 0 TO k (exclusive) INC BY 1
+                    FOR j := 0 TO k (exclusive) INC BY 1
+                        sum := sum + (originalImage[m + i][n + j])*(kernelMatrix[i][j])
+                    END FOR
+                    total := total + sum
+                    sum := 0
+                END FOR
+                resultArray[m][n] := total
+                total := 0
+            END FOR
+        END FOR
+    END convolution
+
+    SUBMODULE: smooth
+    IMPORTS: length (integer), x (integer), y (integer), factor (real)
+    EXPORTS: originalImage (array of integer)
+    ASSERTION: The module will take in the smoothing square size, the coordinates for the square center and the smoothing factor, and perform smoothing on originalImage.
+    ALGORITHM:
+        numCells := length * length
+        sum := 0
+        smoothValue := 0
+        IF ((((x - 1) - (length DIV 2)) < 0) OR (((y - 1) - (length DIV 2)) < 0) OR (((x - 1) + (length DIV 2)) > LENGTH OF originalImage[0]) OR (((y - 1) + (length / 2)) > LENGTH OF originalImage)) THEN
+            UserInterface.displayError <- "Error, the smoothing surface overlaps the boundaries of the image matrix."
+        ELSE
+            FOR i := ((x - 1) - (length DIV 2)) TO ((x - 1) + (length DIV 2)) (exclusive) INC BY 1
+                FOR j := ((y - 1) - (length DIV 2)) TO ((y - 1) + (length DIV 2)) (exclusive) INC BY 1
+                    sum := sum + originalImage[i][j]
+                END FOR
+            END FOR
+            average := (sum DIV numCells)
+            smoothValue := PDIMath.ceil <- (sum * factor) 
+            FOR i := ((x - 1) - (length DIV 2)) TO ((x - 1) + (length DIV 2)) (exclusive) INC BY 1
+                FOR j := ((y - 1) - (length DIV 2)) TO ((y - 1) + (length DIV 2)) (exclusive) INC BY 1
+                    originalImage[i][j] := smoothValue
+                END FOR
+            END FOR
+        END IF
+    END smooth
+
+    //PRIVATE SUBMODULE
+    //Validate length of matrices (no. columns of convolute >= no. columns of kernel. Same for rows. Kernel must be square)
+    SUBMODULE: validateKernelSize
+    IMPORT: kernel (two-dimensional array of integer)
+    EXPORT: valid (boolean)
+    ASSERTION: kernel matrix is square
+    ALGORITHM:
+        valid := false
+        IF ((SIZE OF kernel) = (SIZE OF kernel[0])) THEN
+            valid := true
+        END IF
+    END validateKernelSize
+
+    SUBMODULE: validateLength
+    IMPORT: convolute (two-dimensional array of integer), kernel (two-dimensional array of integer)
+    EXPORT: valid (boolean)
+    ASSERTION: convolute matrix is same size or larger than kernel
+    ALGORITHM:
+        valid := false
+        IF ((SIZE OF convolute)>=(SIZE OF kernel)) AND ((SIZE OF convolute[0])>=(SIZE OF kernel[0])))
+            valid := true
+        END IF
+    END validateLength
+END Image

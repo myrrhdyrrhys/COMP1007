@@ -1,0 +1,210 @@
+Note that this algorithm was submitted previously as a part of the PDI worksheet 7 submissions.
+
+START PDIMath
+    SUBMODULE: min
+    IMPORT: a (integer)(int), b (integer)(int)
+    EXPORT: min (integer)(int)
+    ASSERTION: The minimum of the two numbers a and be will be found, with its value returned to the caller
+    ALGORITHM:
+        IF (a <= b) THEN
+            min := a
+        ELSE 
+            min := b
+        END IF
+    END min
+
+    SUBMODULE: min
+    IMPORT: a (real)(double), b (real)(double)
+    EXPORT: min (real)(double)
+    ASSERTION: The minimum of the two numbers a and be will be found, with its value returned to the caller
+    ALGORITHM:
+        IF (a <= b) THEN
+            min := a
+        ELSE 
+            min := b
+        END IF
+    END min
+
+    SUBMODULE: min
+    IMPORT: a (integer)(long), b (integer)(long)
+    EXPORT: min (integer)(long)
+    ASSERTION: The minimum of the two numbers a and be will be found, with its value returned to the caller
+    ALGORITHM:
+        IF (a <= b) THEN
+            min := a
+        ELSE 
+            min := b
+        END IF
+    END min
+
+    SUBMODULE: min
+    IMPORT: a (real)(float), b (real)(float)
+    EXPORT: min (real)(float)
+    ASSERTION: The minimum of the two numbers a and be will be found, with its value returned to the caller
+    ALGORITHM:
+        IF (a <= b) THEN
+            min := a
+        ELSE 
+            min := b
+        END IF
+    END min
+
+    SUBMODULE: max
+    IMPORT: a (integer)(int), b (integer)(int)
+    EXPORT: max (integer)(int)
+    ASSERTION: The maximum of the two numbers a and be will be found, with its value returned to the caller
+    ALGORITHM:
+        IF (a >= b) THEN
+            max := a
+        ELSE 
+            max := b
+        END IF
+    END max
+
+    SUBMODULE: max
+    IMPORT: a (real)(double), b (real)(double)
+    EXPORT: max (real)(double)
+    ASSERTION: The maximum of the two numbers a and be will be found, with its value returned to the caller
+    ALGORITHM:
+        IF (a >= b) THEN
+            max := a
+        ELSE 
+            max := b
+        END IF
+    END max
+
+    SUBMODULE: max
+    IMPORT: a (integer)(long), b (integer)(long)
+    EXPORT: max (integer)(long)
+    ASSERTION: The maximum of the two numbers a and be will be found, with its value returned to the caller
+    ALGORITHM:
+        IF (a >= b) THEN
+            max := a
+        ELSE 
+            max := b
+        END IF
+    END max
+
+    SUBMODULE: max
+    IMPORT: a (real)(float), b (real)(float)
+    EXPORT: max (real)(float)
+    ASSERTION: The maximum of the two numbers a and be will be found, with its value returned to the caller
+    ALGORITHM:
+        IF (a >= b) THEN
+            max := a
+        ELSE 
+            max := b
+        END IF
+    END max
+
+    SUBMODULE: abs
+    IMPORT: a (integer)(int)
+    EXPORT: abs (integer)(int)
+    ASSERTION: The absolute value of the input will be found and returned to the calling module
+    ALGORITHM:
+        IF ((a * (-1)) > 0) THEN
+            abs := (a*(-1))
+        ELSE 
+            abs := a
+        END IF
+    END abs
+
+    SUBMODULE: abs
+    IMPORT: a (real)(double)
+    EXPORT: abs (real)(double)
+    ASSERTION: The absolute value of the input will be found and returned to the calling module
+    ALGORITHM:
+        IF ((a * (-1)) > 0) THEN
+            abs := (a*(-1))
+        ELSE 
+            abs := a
+        END IF
+    END abs
+
+    SUBMODULE: abs
+    IMPORT: a (int)(long)
+    EXPORT: abs (int)(long)
+    ASSERTION: The absolute value of the input will be found and returned to the calling module
+    ALGORITHM:
+        IF ((a * (-1)) > 0) THEN
+            abs := (a*(-1))
+        ELSE 
+            abs := a
+        END IF
+    END abs
+
+    SUBMODULE: abs
+    IMPORT: a (real)(float)
+    EXPORT: abs (real)(float)
+    ASSERTION: The absolute value of the input will be found and returned to the calling module
+    ALGORITHM:
+        IF ((a * (-1)) > 0) THEN
+            abs := (a*(-1))
+        ELSE 
+            abs := a
+        END IF
+    END abs
+
+    SUBMODULE: floor
+    IMPORT: a (real)
+    EXPORT: down (integer)
+    ASSERTION: The real input will be rounded down to give the integer value of input, returned to caller
+    ALGORITHM:
+        down := (convert to integer)a
+    END floor
+
+    SUBMODULE: ceil
+    IMPORT: a (real)
+    EXPORT: up (integer)
+    ASSERTION: The real input will be rounded up to give the above integer value of input, returned to caller
+    ALGORITHM:
+        up := (convert to integer)(a + 1.0)
+    END ceil
+
+    SUBMODULE: pow
+    IMPORT: base (real), exponent (integer)
+    EXPORT: product (real)
+    ASSERTION: The value for base to the power of exponent will be calculated and returned as product to caller
+    ALGORITHM:
+        product := 1.0
+        IF (exponent > 0) THEN
+            FOR i := 1 TO exponent (inclusive) INC BY 1
+                product := product * base
+            END FOR
+        ELSE IF (exponent < 0) THEN
+            FOR i := 1 TO (exponent*(-1)) (inclusive) INC BY 1
+                product = product * base
+            END FOR
+            product := (1.0 / product)
+        END IF
+    END pow
+   
+    SUBMODULE: pi
+    IMPORT: precision (integer)
+    EXPORT: sum (real)
+    ASSERTION: An approximate value for pi will be calculated with a series of given number of terms
+    ALGORITHM:
+        sum := 0.0
+        radians := 3.14159
+        FOR i := 0 TO precision (exclusive) INC BY 1
+            sum := sum + ((Math.sin <- (radians * ((2 * i) + 1))) / ((2 * i) + 1))
+        END FOR
+        sum := sum * 4.0
+    END pi
+
+    SUBMODULE: e
+    IMPORT: precision (integer)
+    EXPORT: sum (real)
+    ASSERTION: An approximate value for e will be calculated with a series of given number of terms
+    ALGORITHM:
+        sum := 0.0
+        FOR i := 0 TO precision (exclusive) INC BY 1
+            factprod := 1.0
+            FOR j := 1 TO i (inclusive) INC BY 1
+                factprod := factprod * j
+            END FOR
+            sum := sum + (1.0 / factprod)
+        END FOR
+        sum := sum + 1.0
+    END e
+END PDIMath

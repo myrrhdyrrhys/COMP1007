@@ -1,0 +1,445 @@
+Note this algorithm was previously submitted by myself for part of the PDI worksheet 5 submission.
+
+START Menu
+    START MAIN
+        DO
+            menuPrompt := """What would you like to do?
+    > 1. Sum of 2 Integers
+    > 2. Convert Temperature
+    > 3. Convert a Character's case
+    > 4. Print the ASCII equivalent of a Character
+    > 5. Check if 2 Integers are Divisible
+    > 6. Split a date into its components
+    > 7. Fill an array with random numbers and search it for one
+    > 8. Make a times tables chart
+    > 9. Multiply the two matrices in the external file Matrix.java
+    > 0. Exit
+"""
+            menuMin := -1
+            menuMax := 10
+            menuChoice := inputIntRange <- menuPrompt, menuMin, menuMax
+            CASE menuChoice
+                1:
+                    sumInt <- none
+                2:
+                    tempConv <- none
+                3:
+                    caseConv <- none
+                4:
+                    asciiConv <- none
+                5:
+                    divInt <- none
+                6:
+                    dateSplit <- none
+                7:
+                    arrays <- none
+                8:
+                    twoDArrays <- none
+                9:
+                    MatrixMultiplication <- none
+                0:  
+                    OUTPUT "Exiting program..."
+                DEFAULT:
+            END CASE    
+        WHILE menuChoice != 0
+        ASSERTION: menuChoice = 0
+    END MAIN
+
+    SUBMODULE: sumInt
+    IMPORT: none
+    EXPORT: none
+    ASSERTION: "Two integers will be summed, with their total being output."
+    ALGORITHM:
+        OUTPUT "Please enter the first integer to be added: "
+        INPUT numOne
+        OUTPUT "Please enter the second integer to be added: "
+        INPUT numTwo
+        sum := sumIntCalc <- numOne, numTwo
+        OUTPUT "The sum is: " + sum
+    END sumInt
+
+    SUBMODULE: sumIntCalc
+    IMPORT: numOne (integer), numTwo (integer)
+    EXPORT: sum (integer)
+    ASSERTION: "The sum of two input integers will be calculated and returned."
+    ALGORITHM:
+        sum := numOne + numTwo
+    END sumIntCalc
+
+    SUBMODULE: tempConv
+    IMPORT: none
+    EXPORT: none
+    ASSERTION: "A temperature conversion between Celcius and Fahrenheit will be performed, with the result output."
+    ALGORITHM:
+        scalePrompt := """What Temperature scale are you working with? 
+    (C)elcius
+    (F)ahrenheit
+"""
+        scaleOptOne := 'f'
+        scaleOptTwo := 'F'
+        scaleOptThree := 'c'
+        scaleOptFour := 'C'
+        scale := inputChar <- scalePrompt, scaleOptOne, scaleOptTwo, scaleOptThree, scaleOptFour
+        IF scale = 'f' OR scale = 'F'
+            OUTPUT "Please enter the temperature in degrees Celcius: "
+            INPUT c_in (real)
+            f := farenCalc <- c_in
+            OUTPUT "The temperature in Fahrenheit is " + f + " degrees. "
+        ELSE IF scale = 'c' OR scale = 'C'
+            OUTPUT "Please enter the temperature in degrees Fahrenheit: "
+            INPUT f_in (real)
+            c := celsCalc <- f_in
+            OUTPUT "The temperature in Celcius is " + c + " degrees. "
+        END IF
+    END tempConv
+
+    SUBMODULE: farenCalc
+    IMPORT: c_in (real)
+    EXPORT: f (integer)
+    ASSERTION: "The conversion of Celcuis to Farenheit will be calculated and returned."
+    ALGORITHM:
+        f := ((c_in*9)/5)+32
+    END farenCalc
+
+    SUBMODULE: celsCalc
+    IMPORT: f_in (real)
+    EXPORT: c (integer)
+    ASSERTION: "The conversion of Farenheit to Celcius will be calculated and returned."
+    ALGORITHM:
+        c := ((f_in-32)*5)/9
+    END celsCalc
+    
+    SUBMODULE: caseConv
+    IMPORT: none
+    EXPORT: none
+    ASSERTION: "A character conversion between upper and lowercase will be performed, with the result output."
+    ALGORITHM:
+        choicePrompt := "Do you wish to convert (U)pper to lowercase, or (L)owercase to uppercase? "
+        choiceOptOne := 'u'
+        choiceOptTwo := 'U'
+        choiceOptThree := 'l'
+        choiceOptFour := 'L'
+        choice := inputChar <- choicePrompt, choiceOptOne, choiceOptTwo, choiceOptThree, choiceOptFour
+        IF choice = 'U' OR choice = 'u'
+            OUTPUT "Please enter an uppercase character: "
+            INPUT value
+            lower := toLower <- value
+            OUTPUT "The lowercase value of '" + value + "' is: '" + lower
+        ELSE IF choice = 'L' OR choice = 'l'
+            OUTPUT "Please enter an lowercase character: "
+            INPUT value
+            upper := toUpper <- value
+            OUTPUT "The uppercase value of '" + value + "' is: '" + upper
+        END IF
+    END caseConv
+
+    SUBMODULE: toLower
+    IMPORT: value (character)
+    EXPORT: lower (character)
+    ASSERTION: "Character conversion from upper to lowercase will take place."
+    ALGORITHM:
+        ascii := (convert to integer)value
+        lowerascii := ascii + 32
+        lower := (convert to char)lowerascii
+    END toLower
+    
+    SUBMODULE: toUpper
+    IMPORT: value (character)
+    EXPORT: upper (character)
+    ASSERTION: "Character conversion from lower to uppercase will take place."
+    ALGORITHM:
+        ascii := (convert to integer)value
+        upperascii := ascii - 32
+        upper := (convert to char)upperascii
+    END toUpper
+
+    SUBMODULE: asciiConv
+    IMPORT: none
+    EXPORT: none
+    ASSERTION: "A character conversion to ascii, the resultant output to the user."
+    ALGORITHM:
+        OUTPUT "Please enter a character to convert: "
+        INPUT value_asc
+        ascii_asc := toAscii <- value_asc
+        OUTPUT "The ASCII value of '" + value_asc + "' is: " + ascii_asc
+    END asciiConv
+
+    SUBMODULE: toAscii
+    IMPORT: value_asc (character)
+    EXPORT: ascii_asc (integer)
+    ASSERTION: "Conversion from character to ascii will take place."
+    ALGORITHM:
+        ascii_asc := (convert to integer)value_asc
+    END toAscii
+
+    SUBMODULE: divInt
+    IMPORT: none
+    EXPORT: none
+    ASSERTION: "Two integers are divided, with the result output to the user."
+    ALGORITHM:
+        OUTPUT "Please enter the integer you wish to divide: "
+        INPUT numOne_div
+        divPrompt := "Please enter the integer you wish to divide by: "
+        divCannotBe := 0
+        numTwo_div := inputIntEquals <- divPrompt, divCannotBe
+        IF numOne_div%numTwo_div = 0 THEN
+            OUTPUT numOne_div + " is divisible by " + numTwo_div
+        ELSE
+            OUTPUT numOne_div + " is not divisible by " + numTwo_div
+        END IF
+    END divInt
+
+    SUBMODULE: dateSplit
+    IMPORT: none
+    EXPORT: none
+    ASSERTION: "Input date will be split into its three components, the result being output as a sentence to the user."
+    ALGORITHM:
+        DO
+            dateCheck := 0
+            datePrompt :=  "Please enter the date (DDMMYYYY): "
+            dateMin := 1010000
+            dateMax := 99999999
+            INPUT date := inputIntRange <- datePrompt, dateMin, dateMax
+            day := dayCalc <- date
+            month := monthCalc <- date
+            year := yearCalc <- date
+            IF day%10 = 1 AND day!=11 THEN
+                suffix := "st"
+            ELSE IF day%10 = 2 AND day!=12 THEN
+                suffix := "nd"
+            ELSE IF day%10 = 3 AND day!=13 THEN
+                suffix := "rd"
+            ELSE 
+                suffix := "th"
+            END IF
+            CASE month
+                1:
+                    monthName := "January"
+                    dayThreshold := 32
+                2:
+                    monthName := "February"
+                    dayThreshold := 30
+                3:
+                    monthName := "March"
+                    dayThreshold := 32
+                4:  
+                    monthName := "April"
+                    dayThreshold := 31
+                5:  
+                    monthName := "May"
+                    dayThreshold := 32
+                6:  
+                    monthName := "June"
+                    dayThreshold := 31
+                7:
+                    monthName := "July"
+                    dayThreshold := 32
+                8:  
+                    monthName := "August"
+                    dayThreshold := 32
+                9:
+                    monthName := "September"
+                    dayThreshold := 31
+                10: 
+                    monthName := "October"
+                    dayThreshold := 32
+                11:
+                    monthName := "November"
+                    dayThreshold := 31
+                12:     
+                    monthName := "December"
+                    dayThreshold := 32
+                default:
+                    monthName := "error"
+            END CASE
+            IF (day < 1 OR day > dayThreshold) OR (monthName EQUALS "error")
+                dateCheck := 1
+                OUTPUT "Error, this date does not exist"
+            ELSE IF month = 2 AND day = 29 THEN
+                IF year%4!=0 THEN
+                    dateCheck := 1
+                    OUTPUT "Error, this year is not a leap year."
+                ELSE
+                    OUTPUT "It is the " + day of " + monthName + ", in " + year + ". It is a Leap year."
+                END IF
+            ELSE
+                OUTPUT "It is the " + day + suffix + " day of " + monthName + ", in " + year + "."
+            END IF
+        WHILE dateCheck = 1
+        ASSERTION: dateCheck = 0
+    END dateSplit
+    
+    SUBMODULE: dayCalc
+    IMPORT: date (integer)
+    EXPORT: day (integer)
+    ASSERTION: "The value for the day will be pulled from the full date integer."
+    ALGORITHM:
+        day := date/1000000
+    END dayCalc
+ 
+    SUBMODULE: monthCalc
+    IMPORT: date (integer)
+    EXPORT: month (integer)
+    ASSERTION: "The value for the month will be pulled from the full date integer."
+    ALGORITHM:
+        month := (date/10000)%100
+    END monthCalc
+
+    SUBMODULE: yearCalc
+    IMPORT: date (integer)
+    EXPORT: year (integer)
+    ASSERTION: "The value for the year will be pulled from the full date integer."
+    ALGORITHM:
+        year := date%10000
+    END yearCalc
+
+    SUBMODULE: arrays
+    IMPORT: none
+    EXPORT: none
+    ASSERTION: "An array of random elements will be made, then searched for a particular integer."
+    ALGORITHM:
+        arrayPrompt := "Please enter the size of the array. "
+        arrayMin := 1
+        arrayMax := 20
+        arraySize := inputIntRange <- arrayPrompt, arrayMin, arrayMax
+        myArray := ARRAY OF Integer OF SIZE arraySize
+        FOR i := 0 to arraySize (exclusive) INC BY 1
+            myArray[i] = RANDOM INTEGER
+        END FOR
+        OUTPUT "Enter an integer to search the array for. "
+        INPUT searchInt (Integer)
+        FOR i := 0 to arraySize (exclusive) INC BY 1
+            IF myArray[i] EQUALS searchInt THEN
+                found := 1
+                elementLoc := i
+            END IF
+        END FOR
+        IF found = 1 THEN
+            OUTPUT "Found: " + elementLoc
+        ELSE
+            OUTPUT "Not found: " + searchInt
+        END IF
+    END arrays
+            
+    SUBMODULE: twoDArrays
+    IMPORT: none
+    EXPORT: none
+    ASSERTION: "A times-tables chart will be output after the charts no. rows and columns are input."
+    ALGORITHM: 
+        OUTPUT "Please enter Rows: "
+        INPUT rows (Integer)
+        rows := rows + 1
+        OUTPUT "Please enter Columns: "
+        INPUT columns (Integer)
+        columns := columns + 1
+        myArray := ARRAY OF Integer OF SIZE rows BY columns
+        FOR i := 0 to rows (exclusive) INC BY 1
+            FOR j := 0 to columns (exclusive) INC BY 1
+                myArray[i][j] = i x j
+            END FOR
+        END FOR
+        OUTPUT "  |"
+        FOR j := 1 to columns (exclusive) INC BY 1
+                OUTPUT myArray[1][j]
+        END FOR
+        (NEWLINE)
+        OUTPUT "----------------------------------"
+        (NEWLINE)
+        FOR i := 1 to rows (exclusive) INC BY 1
+            OUTPUT i + "|"
+            FOR j := 1 to columns (exclusive) INC BY 1
+                OUTPUT myArray[i][j]
+            END FOR
+            (NEWLINE)
+        END FOR
+    END twoDArrays
+    
+    SUBMODULE: MatrixMultiplication
+    IMPORT: none
+    EXPORT: none
+    ASSERTION: "The two matrices in Matrix.java will be multiplied, with their result output."
+    ALGORITHM:
+        INPUT Matrix.ARRAY_A (ARRAY of Integer OF SIZE m rows AND n columns)
+        INPUT Matrix.ARRAY_B (ARRAY of Integer OF SIZE p rows AND k columns)
+        IF n != p THEN
+            OUTPUT "Error, the matrices provided cannot be multiplied, please edit the matrices in the Matrix.java file"
+        ELSE
+            CREATE matrixC (ARRAY of Integer OF SIZE m rows AND k columns)
+            FOR i := 0 TO m (exclusive) INC BY 1
+                FOR j := 0 TO k (exclusive) INC BY 1
+                    FOR d := 0 TO p (exclusive) INC BY 1
+                        total := total + (Matrix.ARRAY_A[i][d] x Matrix.ARRAY_B[d][j])
+                    END FOR
+                    matrixC[i][j] := total
+                    OUTPUT matrixC[i][j]
+                    total := 0
+                END FOR
+                (NEWLINE)
+            END FOR
+        END IF
+    END MatrixMultiplication
+
+    SUBMODULE inputIntRange
+    IMPORT: prompt (String), min (Integer), max (Integer)
+    EXPORT: intOut (Integer)
+    ASSERTION: "A user input of type integer will be checked against the given range (min-max)."
+    ALGORITHM:
+        intOut := min - 1
+        intError := "Error. The input integer must be between " + min + " and " + max
+        intOutStr = prompt
+        DO
+            OUTPUT intOutStr
+            INPUT intOut
+            intOutStr := intError + (NEWLINE) + prompt
+        WHILE (intOut < min) OR (intOut > max)
+        ASSERTION: (intOut >= min) AND (intOut <= max)
+    END inputIntRange
+
+    SUBMODULE inputIntEquals
+    IMPORT: prompt (String), cannotBe (Integer)
+    EXPORT: intEqualsOut (Integer)
+    ASSERTION: "A user input of type integer will be checked against the given integer."
+    ALGORITHM:
+        intEqualsOut := cannotBe
+        intEqualsError := "Error. The input integer must not be " + cannotBe
+        intEqualsOutStr = prompt
+        DO
+            OUTPUT intEqualsOutStr
+            INPUT intEqualsOut
+            intEqualsOutStr := intEqualsError + (NEWLINE) + prompt
+        WHILE (intEqualsOut = cannotBe)
+        ASSERTION: intEqualsOut != 0
+    END inputIntEquals
+    
+    SUBMODULE inputReal
+    IMPORT: prompt (String), min (Real), max (Real)
+    EXPORT: realOut (Real)
+    ASSERTION: "A user input of type real will be checked against the given range (min-max)."
+    ALGORITHM:
+        realOut := min - 1
+        realError := "Error. The input real must be between " + min + " and " + max
+        realOutStr = prompt
+        DO
+            OUTPUT realOutStr
+            INPUT realOut
+            realOutStr := realError + (NEWLINE) + prompt
+        WHILE (realOut < min) OR (realOut > max)
+        ASSERTION: (realOut >= min) AND (realOut <= max)
+    END inputReal
+
+    SUBMODULE inputChar
+    IMPORT: prompt (String), charOptOne (char), charOptTwo (Char), charOptThree (Char), charOptFour (Char)
+    EXPORT: charOut (Char)
+    ASSERTION: "A user input of type char will be checked against up to four given char options."
+    ALGORITHM:
+        charOut := 'z'
+        charError := "Error. The input char must be " + charOptOne + " or " + charOptTwo + " or " + charOptThree + " or " + charOptFour
+        charOutStr = prompt
+        DO
+            OUTPUT charOutStr
+            INPUT charOut
+            charOutStr := charError + (NEWLINE) + prompt
+        WHILE (charOut != charOptOne) AND (charOut != charOptTwo) AND (charOut != charOptThree) AND (charOut != charOptFour)
+        ASSERTION: charOut = one of the charOpts
+    END inputChar
+END Main    

@@ -1,0 +1,153 @@
+START DetectEdges
+    START Main
+        image := null
+        kernel := null
+        filename := ""
+        menuChoice (integer) := UserInterface.userInput <- "Please choose an option from the following. (Note that option 1 must be executed before any of the other options)" + (NEWLINE) + (TAB) + "1. Import Image" + (NEWLINE) + (TAB) + "2. Import Kernel" + (NEWLINE) + (TAB) + "3. Convolute" + (NEWLINE) + (TAB) + "4. Export Image" + (NEWLINE) + (TAB) + "5. Smooth Image" + (NEWLINE) + (TAB) + "0. Exit" + (NEWLINE), 0, 1
+        CASE menuChoice
+            1:
+                image := importImage <- none
+            0:
+                OUTPUT "Program exiting... Have a nice day!" + (NEWLINE)
+        END CASE
+        IF (menuChoice IS NOT 0) THEN
+            DO
+                menuChoice := UserInterface.userInput <- "Please choose an option from the following. (Note that option 1 must be executed before any of the other options)" + (NEWLINE) + (TAB) + "1. Import Image" + (NEWLINE) + (TAB) + "2. Import Kernel" + (NEWLINE) + (TAB) + "3. Convolute" + (NEWLINE) + (TAB) + "4. Export Image" + (NEWLINE) + (TAB) + "5. Smooth Image" + (NEWLINE) + (TAB) + "0. Exit" + (NEWLINE), 0, 5
+                CASE menuChoice
+                    1:
+                        image := importImage <- none
+                    2: 
+                        kernel := importKernel <- none
+                    3:
+                        image := convolute <- image, kernel
+                    4: 
+                        exportImage <- fileName, image
+                    5:
+                        image := smoothImage <- image
+                    0:
+                        OUTPUT "Program exiting... Have a nice day!" + (NEWLINE)
+                END CASE
+            WHILE (menuChoice IS NOT 0)
+            ASSERTION: menuChoice is 0
+        END IF
+    END MAIN
+    
+    SUBMODULE: importImage
+    IMPORTS: none
+    EXPORTS: image (two dimensional array of integer)
+    ASSERTION: This module corresponds to option 1 of the menu, importing an image. The user will be given two options of where to source the image, from a file or from user input. If 'from a file' is chosen, the user will be give two options for the type of file to import the image from (.csv or .png). The image will then be imported using the chosen option.
+    ALGORITHM: 
+        fileName := ""
+        image := null
+        imageInputChoice (integer) := UserInterface.userInput <- "Where would you like to source the image from?" + (NEWLINE) + (TAB) + "1. A File" + (NEWLINE) + (TAB) + "2. User Input" + (NEWLINE), 1, 2
+        CASE imageImageChoice
+            1:
+                imageTypeChoice (integer) := UserInterface.userInput <- "What file type is the file in which the image is stored in?" + (NEWLINE) + (TAB) + "1. .csv" + (NEWLINE) + (TAB) + "2. .png" + (NEWLINE), 1, 2
+                CASE imageTypeChoice
+                    1:
+                        fileName (String) := UserInterface.userInput <- "Please enter the filename of .csv: "
+                        image := FileIO.readFile <- fileName
+                    2:
+                        fileName (String) := UserInterface.userInput <- "Please enter the filename of the .png: "
+                END CASE
+            2:
+                x (integer) := UserInterface.userInput <- "Please enter in the x-dimension: ", 1, 100
+                y (integer) := UserInterface.userInput <- "Please enter in the y-dimension: ", 1, 100
+                image (2D ARRAY OF TYPE integer OF SIZE x ROWS AND y COLUMNS)
+                OUTPUT "These Coordinates are in (x,y)" + (NEWLINE)
+                FOR i := 0 TO x (exclusive) INC BY 1
+                    FOR j := 0 TO y (exclusive) INC BY 1
+                        image[i][j] := UserInterface.userInput <- "(" + (i + 1) + "," + (j + 1) + "): ", 0, 255
+                        OUTPUT (NEWLINE)
+                    END FOR
+                END FOR
+        END CASE
+    END importImage
+
+    SUBMODULE: importKernel
+    IMPORTS: none
+    EXPORTS: kernel (two dimensional array of integer)
+    ASSERTION: This module corresponds to option 2 of the menu, importing a kernel. The user will be given two options of where to source the kernel, from a file or from user input. The image will then be imported using the chosen option.
+    ALGORITHM:
+        kernel := null 
+        kernelInputChoice (integer) := UserInterface.userInput <- "Where would you like to source the kernel from?" + (NEWLINE) + (TAB) + "1. A File" + (NEWLINE) + (TAB) + "2. User Input" + (NEWLINE), 1, 2
+        CASE KernelImageChoice
+            1:
+                fileName (String) := UserInterface.userInput <- "Please enter the filename of .csv: "
+                kernel := FileIO.readFile <- fileName
+            2:
+                k (integer) := UserInterface.userInput <- "Please enter in the kernel size k: ", 1, 100
+                kernel (2D ARRAY OF TYPE integer OF SIZE k ROWS AND k COLUMNS)
+                OUTPUT "These Coordinates are in (x,y)" + (NEWLINE)
+                FOR i := 0 TO k (exclusive) INC BY 1
+                    FOR j := 0 TO k (exclusive) INC BY 1
+                        kernel[i][j] := UserInterface.userInput <- "(" + (i + 1) + "," + (j + 1) + "): ", 0, 255
+                        OUTPUT (NEWLINE)
+                    END FOR
+                END FOR
+        END CASE
+    END importKernel
+
+    SUBMODULE: convolute
+    IMPORTS: image (two dimensional array of integer), kernel (two dimensional array of integer)
+    EXPORTS: image (two dimensional array of integer)
+    ASSERTION: This module corresponds to option 3 of the menu, convolute. The module take in the currently stored image and kernel matrices and perform a convolution.
+    ALGORITHM:
+        IF (kernel IS NOT null) THEN
+            CONSTRUCT imageObj USING image
+            image := imageObj.convolution <- kernel
+        ELSE
+            OUTPUT "You must first import a kernel to do this." + (NEWLINE)
+        END IF
+    END convolute
+
+    SUBMODULE: exportImage
+    IMPORTS: fileName (String), image (two-dimensional array of integer)
+    EXPORTS: none
+    ASSERTION: This module corresponds to option 4 of the menu, export image. The module will take in the name of the file the image was stored in (if it was imported from a file), and the image matrix as currently stored. The module then asks the user to input the details of the file to be saved, and saves the file with the appropriate naming convention if inputs are valid.
+    ALGORITHM:
+        IF (fileName IS "") THEN
+            fileName (String) := UserInterface.userInput <- "Please enter the File Name: " 
+        END IF
+        fileType (character) := UserInterface.userInputChar <- "What file type would you like to save with? (C)SV or (P)NG: ", 'c', 'C', 'p', 'P'
+        date (integer) := UserInterface.userInput <- "Please enter a Date to save with: ", 1010000, 31129999
+        month (integer) := Menu.monthCalc <- date
+        day (integer) := Menu.dayCalc <- date
+        year (integer) := Menu.yearCalc <- date
+        CONSTRUCT dateObj USING day, month, year
+        IF ((fileType IS 'c') OR (fileType IS 'C'))
+            FileIO.writeFile <- (dateObj.toString <- none + "_Processed_" + fileName + ".csv", image)
+        ELSE
+            FileIO.writeFile <- (dateObj.toString <- none + "_Processed_" + fileName + ".png", image)
+        END IF
+    END exportImage
+
+    SUBMODULE: smoothImage
+    IMPORTS: image (two dimensional array of integer)
+    EXPORTS: image (two dimensional array of integer)
+    ASSERTION: The module corresponds to option 5 of the menu, smooth image. The module takes in the image matrix as it is currently stored, takes input for the details of the smoothing, then performs the smoothing operation on the image matrix.
+    ALGORITHM:
+        CONSTRUCT imageObj USING image
+        width (integer) := PDIMath.min <- LENGTH OF image, LENGTH OF image[0]
+        DO
+            length (integer) := UserInterface.userInput <- "Please enter a smoothing surface: ", 1, width
+            IF (length MOD 2 = 0) THEN
+                UserInterface.displayError <- "Error, the smoothing surface length must not be even."
+            END IF
+        WHILE (length MOD 2 = 0)
+        ASSERTION: length is odd
+        pixel (String) := UserInterface.userInput <- "Please enter a pixel to smooth (x,y): "
+        splitLine (array of String) := pixel.split <- ","
+        splitLineInt (ARRAY OF integer OF SIZE 2)
+        TRY
+            FOR i := 0 TO 2 (exclusive) INC BY 1
+                splitLineInt[i] := Integer.parseInt <- splitLine[i]
+            END FOR
+        CATCH: NumberFormatException (error when parsing string to integer
+            UserInterface.displayError <- "Error when parsing coordinates to integer type from type string."
+        factor (real) := UserInterface.userInput <- "Please enter a smoothness factor (between 0.0 and 1.0 (not including 0.0): ", 0.000001, 1
+        image = imageObj.smooth <- length, splitLineInt[0], splitLineInt[1], factor
+    END smoothImage
+END AssignmentTask
+    
+                

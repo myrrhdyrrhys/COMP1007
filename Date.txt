@@ -1,0 +1,179 @@
+Note that this algorithm was previously devised by me and submitted as part of the PDI worksheet 6 submission.
+
+START Date
+    //Private Classfields
+    (integer) day
+    (integer) month
+    (integer) year
+    
+    SUBMODULE: Date (Default Constructor)
+    IMPORT: none
+    EXPORT: address of new Date object
+    ASSERTION: day = 26, month = 01, year = 2001
+    ALGORITHM:
+        day := 26
+        month := 01
+        year := 2001
+    END Date
+
+    SUBMODULE: Date (Alternate Constructor)
+    IMPORT: inDay (integer), inMonth (integer), inYear (integer)
+    EXPORT: address of new Date object
+    ASSERTION: Creates the object if the imports are valid and fails otherwise
+    ALGORITHM:
+        IF (validateMonth <- inMonth = TRUE) THEN
+            IF (validateDay <- inDay, inMonth, inYear = TRUE) THEN
+                setDay <- inDay
+                setMonth <- inMonth
+                setYear <- inYear
+            ELSE
+                THROW IllegalArgumentException <- "Invalid Day."
+            END IF
+        ELSE
+            THROW IllegalArgumentException <- "Invalid Month."
+        END IF
+    END Date
+    
+    SUBMODULE: Date (Copy Constructor)
+    IMPORT: inDate (Date)
+    EXPORT: address of new Date object
+    ASSERTION: Creates copy of input Date object of identical "state"
+    ALGORITHM:
+        day := inDate.getDay <- none
+        month := inDate.getMonth <- none
+        year := inDate.getYear <- none
+    END Date
+
+    //MUTATORS (Setters)
+    SUBMODULE: setDay
+    IMPORT: inDay (integer)
+    EXPORT: none
+    ASSERTION: day classfield will be set to inDay
+    ALGORITHM:
+        day := inDay
+    END setDay
+
+    SUBMODULE: setMonth
+    IMPORT: inMonth (integer)
+    EXPORT: none
+    ASSERTION: month classfield will be set to inMonth
+    ALGORITHM:
+        month := inMonth
+    END setMonth
+
+    SUBMODULE: setYear
+    IMPORT: inYear (integer)
+    EXPORT: none
+    ASSERTION: year classfield will be set to inYear
+    ALGORITHM:
+        year := inYear
+    END setYear
+
+    //ACCESSORS (Getters)
+    SUBMODULE: getDay
+    IMPORT: none
+    EXPORT: day (integer)
+    ASSERTION: returns the current value of the private classfield day
+    ALGORITHM:
+    END getDay
+
+    SUBMODULE: getMonth
+    IMPORT: none
+    EXPORT: month (integer)
+    ASSERTION: returns the current value of the private classfield month
+    ALGORITHM:
+    END getMonth
+
+    SUBMODULE: getYear
+    IMPORT: none
+    EXPORT: year (integer)
+    ASSERTION: returns the current value of the private classfield year
+    ALGORITHM:
+    END getYear
+
+    //equals
+    SUBMODULE: equals
+    IMPORT: obj (Object)
+    EXPORT: isEqual (boolean)
+    ASSERTION: Two Dates are interchangeable if they have the same day, month and year
+    ALGORITHM:
+        isEqual := false
+        IF (obj IS A Date)
+            inDate := (convert to Date)obj
+            IF (inDate.getDay <- none = day) THEN
+                IF (inDate.getMonth <- none = month) THEN
+                    IF (inDate.getYear <- none = year) THEN
+                        isEqual := TRUE
+                    END IF
+                END IF
+            END IF
+        END IF
+    END equals
+
+    //Clone (clones the current object)
+    SUBMODULE: clone
+    IMPORT: none
+    EXPORT: (Date) (copy of current object)
+    ASSERTION: creates a clone of the current object
+    ALGORITHM:
+    END clone
+
+    //toString
+    SUBMODULE: toString
+    IMPORT: none
+    EXPORT: (String) outString
+    ASSERTION: formats output of object of type Date
+    ALGORITHM:
+        outString := day + "-" + month + "-" + year
+    END toString
+
+    //PRIVATE SUBMODULES
+    SUBMODULE: validateMonth
+    IMPORT: inMonth (integer)
+    EXPORT: valid (boolean)
+    ASSERTION: month is an integer between 1 and 12 (inclusive)
+    ALGORITHM:
+        valid := false
+        IF ((month <= 12) AND (month >= 1)) THEN
+            valid := true
+        END IF
+    END validateMonth
+
+    SUBMODULE: validateDay
+    IMPORT: inDay (integer), inMonth (integer), inYear (integer)
+    EXPORT: valid (boolean)
+    ASSERTION: day is in the range for the given month and given year 
+    ALGORITHM:
+        valid := false
+        dayThreshold := 0
+        CASE OF inMonth
+            1:
+                dayThreshold := 32
+            2: 
+                dayThreshold := 29
+                IF (inYear % 4 = 0) THEN
+                    dayThreshold := 30
+                END IF
+            3:
+                dayThreshold := 32  
+            4:
+                dayThreshold := 31
+            5:
+                dayThreshold := 32
+            6:
+                dayThreshold := 31
+            7:
+                dayThreshold := 32
+            8:
+                dayThreshold := 32
+            9:
+                dayThreshold := 31
+            10:
+                dayThreshold := 32
+            11:
+                dayThreshold := 31
+            12:
+                dayThreshold := 32
+        END CASE
+    END validateDay
+END Date

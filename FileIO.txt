@@ -1,0 +1,136 @@
+Note that this algorithm was submitted previously by myself for the PDI worksheet 8 submission. 
+
+START FileIO
+    SUBMODULE: readFile
+    IMPORTS: filename (String)
+    EXPORTS: readArray (two-dimensional array of integers)
+    ASSERTION: The module will attempt to open the file of the given filename, read its contents into a 2D array if valid (rectangular), then return the array to the caller.
+    ALGORITHM:
+        readArray := setSize <- fileName
+        counter := 0
+        TRY
+            theFile := OPENFILE fileName
+            INPUT line FROM theFile
+            IF line IS NOT null THEN
+                WHILE NOT (theFile = EOF)
+                    counter := processLine <- line, readArray, counter
+                    line := NEXT LINE IN FILE
+                END WHILE
+                rectangular = validateShape <- readArray
+                IF rectangular = FALSE THEN
+                    UserInterface.displayError <- "Error. The input matrix is not rectangular."
+                    readArray = null
+                END IF
+            ELSE
+                THROW IllegalArgumentException "The chosen file is empty."
+            END IF
+            CLOSE FILE
+        CATCH: FileNotFoundException (file named does not exist)
+            OUTPUT "Couldn't find your file " + exception message + " Try Again!"
+        CATCH: IllegalArgumentException (thrown to when file empty)
+            OUTPUT exceptionmessage
+        CATCH: IOException (error in the i/o handling)
+            IF theFile IS NOT null THEN
+                TRY
+                    CLOSE FILE
+                CATCH: IOException
+            END IF
+            OUTPUT "Error on fileProcessing: " + exceptionmessage
+    END readFile
+
+    SUBMODULE: setSize
+    IMPORTS: filename (String)
+    EXPORTS: readArray (two-dimensional array of integers)
+    ASSERTION: The module will attempt to open the file of the given filename, read its contents for the no. lines in the file and the length of the lines and set the size of the array readArray accordingly.
+    ALGORITHM:
+        readArray := null
+        rows := 0
+        columns := 0
+        TRY
+            theFile := OPENFILE fileName
+            INPUT line FROM theFile
+            IF line IS NOT null THEN
+                WHILE NOT (theFile = EOF)
+                    splitLine := line.split <- ","
+                    columns := LENGTH OF splitLine
+                    rows := rows + 1
+                    line := NEXT LINE IN FILE
+                END WHILE
+                readArray := 2D Array OF SIZE rows ROWS AND columns COLUMNS
+            ELSE
+                THROW IllegalArgumentException "The chosen file is empty."
+            END IF
+            CLOSE FILE
+        CATCH: FileNotFoundException (file named does not exist)
+            OUTPUT "Couldn't find your file " + exception message + " Try Again!"
+        CATCH: IllegalArgumentException (thrown to when file empty)
+            OUTPUT exceptionmessage
+        CATCH: IOException (error in the i/o handling)
+            IF theFile IS NOT null THEN
+                TRY
+                    CLOSE FILE
+                CATCH: IOException
+            END IF
+            OUTPUT "Error on fileProcessing: " + exceptionmessage
+    END setSize
+    
+    SUBMODULE: processLine
+    IMPORTS: csvRow (String), readArray (2D array of integers), counter (integer)
+    EXPORTS: counter (integer)
+    ASSERTION: The module will split the csv rows line by line and add it to the readArray  
+    ALGORITHM:
+        splitLine := csvRow.split <- ","
+        TRY
+            FOR i := 0 TO LENGTH OF splitLine (exclusive) INC BY 1
+                readArray[counter][i] := Integer.parseInt <- splitLine[i]
+            END FOR
+            counter := counter + 1
+        CATCH: ArrayIndexOutOfBoundsException (Matrix in file isn't rectangular)
+            UserInterface.displayError <- "Error. Matrix in file is not rectangular"
+        CATCH: NumberFormatException (Error when parsing)
+            OUTPUT exceptionmessage
+    END processLine
+    
+    SUBMODULE: validateShape
+    IMPORTS: readArray (2D array of integers)
+    EXPORTS: rectangular (boolean)
+    ASSERTION: readArray is rectangular if rectangular is true
+    ALGORITHM:
+        rectangular := TRUE
+        FOR i := 0 TO LENGTH OF readArray (exclusive) INC BY 1
+            IF (LENGTH OF readArray[i] IS NOT LENGTH OF readArray[i - 1]) THEN
+                rectangular := FALSE
+            END IF
+        END FOR
+    END validateShape
+
+    SUBMODULE: writeFile
+    IMPORTS: fileName (String), writeArray (2D array of integers)
+    EXPORTS: none
+    ASSERTION: The module will attempt to write the writeArray to the fileName
+    ALGORITHM:
+        TRY
+            theFile := OPENFILE fileName
+            FOR i := 0 TO LENGTH OF writeArray (exclusive) INC BY 1
+                FOR j := 0 TO LENGTH OF writeArray[0] (exclusive) INC BY 1
+                    IF (j = (LENGTH OF writeArray[0] - 1))
+                        OUTPUT writeArray[i][j] TO theFile
+                    ELSE
+                        OUTPUT (writeArray[i][j] + ",") TO theFile
+                    END IF
+                END FOR
+                OUTPUT (NEWLINE)
+            END FOR
+            CLOSEFILE theFile
+        CATCH: FileNotFoundException (file named does not exist)
+            OUTPUT "Couldn't find your file " + exception message + " Try Again!"
+        CATCH: IOException (error in the i/o handling)
+            IF theFile IS NOT null THEN
+                TRY
+                    CLOSE FILE
+                CATCH: IOException
+            END IF
+            OUTPUT "Error on fileProcessing: " + exceptionmessage
+    END writeFile
+END FileIO
+                 
